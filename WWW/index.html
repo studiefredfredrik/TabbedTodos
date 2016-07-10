@@ -1,0 +1,161 @@
+<!doctype html>
+
+<!-- ASSIGN OUR ANGULAR MODULE -->
+<html ng-app="scotchTodo">
+<head>
+	<!-- META -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1"><!-- Optimize mobile viewport -->
+
+	<title>Node/Angular Todo App</title>
+
+	<!-- SCROLLS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<style>
+		html 					{ overflow-y:scroll; }
+		body 					{ padding-top:50px; }
+		#todo-list 				{ margin-bottom:30px; }
+		#todo-form 	 			{ margin-bottom:50px; }
+		span{
+			display: inline-block;
+			min-width: 100%;
+		}
+		span.danger:hover {
+			color: red;
+			text-decoration: line-through;
+			cursor: pointer;
+			display: inline-block;
+			min-width: 100%;	
+		}
+		
+		<!-- input	{box-shadow: none !important;}  Uncomment for nice print. Due to Chrome Issue 174583: box-shadow, when printed, appears solid black @print. -->
+		@media print {		
+			h1 span,
+			button {
+				display: none !important;
+			}
+			.form-group,
+			form,
+			input,
+			textarea {
+				outline: none !important;
+				border: none !important;
+				box-shadow: none !important;
+				outline: none !important;
+				box-shadow: none !important;
+				-webkit-box-shadow: none !important;
+				-moz-box-shadow: none !important;
+				-webkit-filter:blur(0);
+				transition: none;
+			}
+		}
+		<!-- Show currentlist in top left if menu buttons are hidden (replaced by hamburger) -->
+		@media (max-width: 768px) {
+		   .navbar-brand {
+			   display: inline !important;
+		   }
+		}
+		@media (min-width: 769px) {
+		   .navbar-brand {
+			   display: none !important;
+		   }
+		}
+	</style>
+
+	<!-- SPELLS -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	<!-- <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.js"></script><!-- load angular -->
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
+	
+	<script src="core.js"></script>
+
+</head>
+<!-- SET THE CONTROLLER AND GET ALL TODOS WITH INITIALIZE FUNCTION -->
+<body ng-controller="mainController">
+<!--
+		<!-- START OF NAV -->
+		<nav class="navbar navbar-default">
+		  <div class="container-fluid">
+			<div class="navbar-header">
+			  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span> 
+			  </button>
+			  <a class="navbar-brand" href="#">{{currentListName}}</a>
+			</div>
+			<div class="collapse navbar-collapse" id="myNavbar">
+			  <ul class="nav navbar-nav ">
+				<li ng-repeat="list in lists" ng-click="setCurrentList(list)" ng-class="{'active': isActiveList(list)}">
+					<a href="#" data-toggle="collapse" data-target="#myNavbar">{{list.name}} </a>
+				</li>
+			  </ul>
+			  <form class="navbar-form  pull-right" role="search">
+				<div class="form-group">
+				  <input ng-model="listForm.name" type="text" class="form-control" placeholder="Name a new list">
+				</div>
+				<button type="submit" class="btn btn-default" ng-click="createList()" ng-disabled="!listForm.name">Add list</button>
+			  </form>
+			</div><!-- /.navbar-collapse -->
+		  </div><!-- /.container-fluid -->
+		</nav>
+		<!-- END OF NAV-->
+
+		<!-- HEADER AND TODO COUNT -->
+		<div class="jumbotron text-center">
+			<h1>Notes <span class="label label-info">{{ todos.length }}</span></h1>
+		</div>
+		
+		<!-- Shopping progress -->
+		<div class="progress">
+		  <div class="progress-bar" role="progressbar" aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{progress}}%;">
+			{{progress}}%
+		  </div>
+		</div>
+		<div id="view" ng-if="currentList">
+			<!-- TODO LIST -->
+			<div id="todo-list" class="row" >
+				<div class="col-sm-4 col-sm-offset-4">
+
+					<!-- LOOP OVER THE TODOS IN $scope.todos -->
+					<div class="panel panel-primary" >
+						<div class="checkbox" class="panel panel-primary" ng-if="!todo.done" ng-repeat="todo in list2 = (todos | filter:currentList)">
+							<label>
+								<input type="checkbox" ng-checked="todo.done" ng-click="deleteTodo(todo,todo._id)"> <span>{{ todo.text }}</span>
+							</label>
+						</div>
+					</div>
+					<!-- checked items -->
+					<div class="panel panel-success">
+						<div class="checkbox" ng-if="todo.done" ng-repeat="todo in list1 = (todos | filter:currentList)">
+							<label>
+								<input type="checkbox" ng-checked="todo.done" ng-click="uncheck(todo,todo._id)"> 
+									<span class="danger" ng-click="deleteTodo(todo,todo._id)">
+										{{ todo.text }}
+									</span>
+							</label>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- FORM TO CREATE TODOS -->
+			<div id="todo-form" class="row">
+				<div class="col-sm-8 col-sm-offset-2 text-center">
+					<form>
+						<div class="form-group">
+
+							<!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
+							<input type="text" class="form-control input-lg text-center" placeholder="Legg til noe nytt" ng-model="formData.text">
+						</div>
+						<!-- createToDo() WILL CREATE NEW TODOS -->
+						<button type="submit" class="btn btn-primary btn-lg" ng-click="createTodo()">Add</button>
+						<button ng-if="list1.length === 0 && list2.length === 0" class="btn btn-primary btn-lg" ng-click="deleteList(currentList)">Delete list</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

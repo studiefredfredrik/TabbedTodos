@@ -2,7 +2,7 @@
 Tabbed Todo's provides you with simple checklists for things like shopping and keeping track of tasks.
 The page is responsive (mobile friendly), and lets you check off items, and then delete them.
 A progress bar keeps track of your progress. Mongodb is used for storage.
-![screenshot of Tabbed Todo's]()
+![screenshot of Tabbed Todo's](https://github.com/studiefredfredrik/TabbedTodos/blob/master/screenshots/screenshot1.JPG?raw=true)
 
 ## Instructions
 
